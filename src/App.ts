@@ -2,6 +2,9 @@ import * as path from 'path';
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
+import MarketRouter from './routes/markets';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -36,6 +39,7 @@ class App {
       });
     });
     this.express.use('/', router);
+    this.express.use('/api/markets/login', MarketRouter);
   }
 
 }
