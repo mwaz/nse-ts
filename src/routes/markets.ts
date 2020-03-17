@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction} from 'express';
-// const Markets = require('../data/marketRequest');
-import  * as puppeteer from 'puppeteer';
+const  marketsData  = require('../data-dump/nse.json');
+
 
 import fetchData from '../data/marketRequest';
 
@@ -18,8 +18,9 @@ export class MarketsRouter {
   /**
    * GET all Markets.
    */
-  public getAll(req, res) {
-    return fetchData;
+  public getAll = async(req, res) => {
+    await fetchData;
+    await res.send(marketsData)
   }
 
   /**

@@ -39,7 +39,7 @@ class App {
       });
     });
     this.express.use('/', router);
-    this.express.use('/api/markets/login', MarketRouter);
+    this.express.use('/api/markets/', MarketRouter);
   }
 
 }
