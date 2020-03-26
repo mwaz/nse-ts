@@ -19,6 +19,8 @@ class App {
     this.routes();
   }
 
+  
+
   // Configure Express middleware.
   private middleware(): void {
     this.express.use(logger('dev'));

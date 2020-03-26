@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import  * as puppeteer from 'puppeteer';
+import Stocks from './models/stocks';
+import * as cron from 'node-cron';
 
 let browser; 
 let page; 
@@ -40,37 +42,52 @@ export const getIframeData = async(page) => {
         highestValueSold = await frame.$$eval(`#high_${i}`, (options:any) => options.map(option => option.textContent));
         lowestValueSold = await frame.$$eval(`#low_${i}`, (options:any) => options.map(option => option.textContent));
 
-    // resultsObject[i] = {
-    //     stockName: [
-    //     tradingName: stockTradingName[0],
-    //     demandQuantity: stockDemandQuantity[0],
-    //     demandValue: stockDemandValue[0],
-    //     supplyValue: stockDemandValue[0],
-    //     supplyQuantity: stockSupplyQuantity[0],
-    //     highestValueSold: highestValueSold[0] ,
-    //     lowestValueSold: lowestValueSold[0],
-    //     ]
-    // }
-
-    resultsObject[i] = [{
+    resultsObject[i] = {
         stockName: stockName[0],
         tradingName: stockTradingName[0],
             demandQuantity: stockDemandQuantity[0],
             demandValue: stockDemandValue[0],
-            supplyValue: stockDemandValue[0],
+            supplyValue: stockSupplyValue[0],
             supplyQuantity: stockSupplyQuantity[0],
             highestValueSold: highestValueSold[0] ,
             lowestValueSold: lowestValueSold[0],
-    }]
     }
-    console.log(resultsObject, 'res')
+    }
+    // console.log(resultsObject, 'res')
     return resultsObject;
 }
+
+
+// Setup Method to create data history 
+
+const saveData = async(results) => {
+
+    for(let i=0; i<results.length; i++){
+        try{
+             results[i].stockName  ? console.log(results[i].stockName, 'stockName'): console.log('stockName undefined')
+             const newStockObject = await Stocks.create({
+                stockName: results[i].stockName, stockTradingName: results[i].stockTradingName, stockDemandQuantity: results[i].stockDemandQuantity, stockDemandValue: results[i].stockDemandValue, stockSupplyValue: results[i].stockSupplyValue, stockSupplyQuantity: results[i].stockSupplyQuantity, highestValueSold: results[i].highestValueSold, lowestValueSold: results[i].lowestValueSold
+            });
+            return ({ stocks: newStockObject });
+            // const { stockName, stockTradingName, stockDemandQuantity, stockDemandValue, stockSupplyValue, stockSupplyQuantity, highestValueSold, lowestValueSold } = stocks;
+
+        }
+        catch(e){
+            console.error(e.name + ': ' + e.message)
+        }
+      }
+
+
+}
+
 
 const fetchData = (async () => {
     await appLogin();
     const resultsObject = await getIframeData(page);
-    await writeData('./nse.json', JSON.stringify(resultsObject));
+    const timeStamp = new Date();
+    await writeData(__dirname + `/../data-dump/nse.json`, JSON.stringify(resultsObject));
+    await writeData(__dirname + `/../data-backup/${timeStamp}_nse.json`, JSON.stringify(resultsObject));
+    await saveData(resultsObject);
     await page.screenshot({path: 'screenshot.png'});
     await browser.close();
   })();

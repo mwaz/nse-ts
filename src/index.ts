@@ -1,10 +1,40 @@
 import * as http from 'http';
 import * as debug from 'debug';
+import * as mongoose from 'mongoose';
+import fetchData from './data/marketRequest';
+import * as cron from 'node-cron';
+import * as fs from 'fs';
+import * as https from 'https';
 
 import App from './App';
 
 
 debug('ts-express:server');
+
+// mongoose
+//   .connect(
+//     'mongodb://mongo:27017/dev_nse_data',
+//     { useNewUrlParser: true, useUnifiedTopology: false }
+//   )
+//   .then(() => {
+//     console.log('successfully connected to the database');
+//   })
+//   .catch((e) => {
+//     console.log('unable to connect to the database  Exiting now..');
+//     process.exit();
+//   });
+//   mongoose.set('useCreateIndex', true);
+
+  const fetchDataCronJob = cron.schedule('15 8,17 * * 1-5', function() {
+    console.log("Running Cron Job For fetching nse data");
+        fs.readFile('/nse.json/', async (err, data) => {
+           if (err) throw err;
+           await fetchData
+           await https.get('https://hc-ping.com/08239020-25e7-491f-b90e-c41709033dde');
+        });
+    });
+
+fetchDataCronJob.start();
 
 const port = normalizePort(process.env.PORT || 3000);
 App.set('port', port);
