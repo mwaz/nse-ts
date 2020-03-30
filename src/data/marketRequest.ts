@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import  * as puppeteer from 'puppeteer';
 import Stocks from './models/stocks';
-import * as cron from 'node-cron';
 
 let browser; 
 let page; 
@@ -26,9 +25,7 @@ export const writeData = async(path, data) => {
 
 export const getIframeData = async(page) => {
     const frame = await page.frames().find(frame => frame.name() === 'iMarketDetailsFrame');
-    let optionsResult = [];
     let resultsObject:any = [];
-    // let stockName= []
     let stockObject:any = {}
     let stockName, stockTradingName, stockDemandQuantity, stockDemandValue, stockSupplyValue, stockSupplyQuantity, highestValueSold, lowestValueSold;
 
@@ -53,12 +50,8 @@ export const getIframeData = async(page) => {
             lowestValueSold: lowestValueSold[0],
     }
     }
-    // console.log(resultsObject, 'res')
     return resultsObject;
 }
-
-
-// Setup Method to create data history 
 
 const saveData = async(results) => {
 
@@ -69,14 +62,11 @@ const saveData = async(results) => {
                 stockName: results[i].stockName, stockTradingName: results[i].stockTradingName, stockDemandQuantity: results[i].stockDemandQuantity, stockDemandValue: results[i].stockDemandValue, stockSupplyValue: results[i].stockSupplyValue, stockSupplyQuantity: results[i].stockSupplyQuantity, highestValueSold: results[i].highestValueSold, lowestValueSold: results[i].lowestValueSold
             });
             return ({ stocks: newStockObject });
-            // const { stockName, stockTradingName, stockDemandQuantity, stockDemandValue, stockSupplyValue, stockSupplyQuantity, highestValueSold, lowestValueSold } = stocks;
-
         }
         catch(e){
             console.error(e.name + ': ' + e.message)
         }
       }
-
 
 }
 
