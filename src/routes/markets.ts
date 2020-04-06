@@ -19,8 +19,20 @@ export class MarketsRouter {
    * GET all Markets.
    */
   public getAll = async(req, res) => {
+    await res.send(marketsData);
     await fetchData;
-    await res.send(marketsData)
+
+  }
+
+  /**
+   *Get a Single stock
+   *
+   * @memberof MarketsRouter
+   */
+  public getStock = async(req, res) => {
+    // await res.send(marketsData);
+    // await fetchData;
+
   }
 
   /**
