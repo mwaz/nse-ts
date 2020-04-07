@@ -19,8 +19,6 @@ class App {
     this.routes();
   }
 
-  
-
   // Configure Express middleware.
   private middleware(): void {
     this.express.use(logger('dev'));
@@ -37,11 +35,12 @@ class App {
     // placeholder route handler
     router.get('/', (req, res, next) => {
       res.json({
-        message: 'Hello World!'
+        message: 'Hello, Welcome to NSE Stocks!'
       });
     });
     this.express.use('/', router);
-    this.express.use('/api/markets/', MarketRouter);
+    this.express.use('/api/v1/stocks/', MarketRouter);
+    this.express.use('/api/v1/stocks/:stock', MarketRouter);
   }
 
 }
