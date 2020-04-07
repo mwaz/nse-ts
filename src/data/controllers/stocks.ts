@@ -9,8 +9,6 @@ async saveStocks({stocks}, res) {
     const newStockObject = await Stocks.create({
         stockName, stockTradingName, stockDemandQuantity, stockDemandValue, stockSupplyValue, stockSupplyQuantity, highestValueSold, lowestValueSold
     });
-    return res.status(201).jsend.success({ stocks: newStockObject })
-
-
+    return res.status(201).jsend.success({ stocks: newStockObject });
 }
 }
