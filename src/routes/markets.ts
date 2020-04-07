@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction} from 'express';
 const  marketsData  = require('../data-dump/nse.json');
 
 
-import fetchData from '../data/marketRequest';
+import { fetchData, fetchSingleStock } from '../data/marketRequest';
 
 export class MarketsRouter {
   router: Router
@@ -30,8 +30,9 @@ export class MarketsRouter {
    * @memberof MarketsRouter
    */
   public getStock = async(req, res) => {
-    // await res.send(marketsData);
-    // await fetchData;
+    const singleStock = await fetchSingleStock(req);
+    await res.send(singleStock);
+    await fetchData;
 
   }
 
@@ -41,6 +42,7 @@ export class MarketsRouter {
    */
   init() {
     this.router.get('/', this.getAll);
+    this.router.get('/:stock', this.getStock);
   }
 
 }
