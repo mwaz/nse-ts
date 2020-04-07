@@ -25,6 +25,7 @@
     "express": "^4.17.1",
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
+    "minimist": "^1.2.5",
     "mocha": "^7.1.0",
     "mongoose": "^5.9.5",
     "morgan": "^1.9.1",
