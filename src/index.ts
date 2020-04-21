@@ -27,16 +27,16 @@ debug('ts-express:server');
 
   const fetchDataCronJob = cron.schedule('15 8,17 * * 1-5', function() {
     console.log("Running Cron Job For fetching nse data");
-        fs.readFile('/nse.json/', async (err, data) => {
+        fs.readFile(__dirname + `/../data-dump/nse.json`, async (err, data) => {
            if (err) throw err;
-           await fetchData
+          //  await fetchData
            await https.get('https://hc-ping.com/08239020-25e7-491f-b90e-c41709033dde');
         });
     });
 
 fetchDataCronJob.start();
 
-const port = normalizePort(process.env.PORT || 3000);
+const port = normalizePort(process.env.PORT || 3005);
 App.set('port', port);
 
 const server = http.createServer(App);

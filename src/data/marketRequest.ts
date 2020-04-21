@@ -24,6 +24,13 @@ export default class StockMarket {
         });
     }
 
+    // async checkExistentDirectory(dirname){
+    //     if (!fs.existsSync(dirname)){
+    //         await fs.writeFileSync(dirname, 'nah');
+    //         // await fs.writeFileSync(dirname, 'naah');
+    //     }
+    // }
+
     async getIframeData(page) {
         const frame = await page.frames().find(frame => frame.name() === 'iMarketDetailsFrame');
         let resultsObject: any = [];
@@ -78,10 +85,12 @@ export default class StockMarket {
 
 const fetchData = (async () => {
     let stocks = new StockMarket
+    const dataDirectory = `${__dirname}/../data-dump/nse.json`
     await stocks.appLogin();
     const resultsObject = await stocks.getIframeData(page);
     const timeStamp = new Date();
-    await stocks.writeData(__dirname + `/../data-dump/nse.json`, JSON.stringify(resultsObject));
+    // await stocks.checkExistentDirectory(dataDirectory);
+    await stocks.writeData(dataDirectory, JSON.stringify(resultsObject));
     await stocks.writeData(__dirname + `/../data-backup/${timeStamp}_nse.json`, JSON.stringify(resultsObject));
     await stocks.saveData(resultsObject);
     await page.screenshot({ path: 'screenshot.png' });
@@ -100,8 +109,9 @@ const fetchSingleStock = async (stock) => {
                 for (var key in element) {
                     if (element.hasOwnProperty(key)) {
                         if (key === stocks) {
-                            // console.log(element[key], 'keys');
+                            console.log(element[key], 'keys');
                             stockData = element[key];
+
                             return stockData
                         }
                             return { message: 'No stock was found' };
@@ -111,6 +121,7 @@ const fetchSingleStock = async (stock) => {
             }
         });
     }
+
      return stockData
 }
 
