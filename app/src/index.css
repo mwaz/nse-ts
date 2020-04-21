@@ -11,3 +11,49 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.navigation-banner {
+  display: block;
+}
+
+.info-card {
+  width: 100%;
+  text-align: center;
+  padding: 2px 10px;
+}
+
+.chart-body {
+  display: none
+}
+
+.collapse {
+  text-align: center;
+  padding-top: 5px;
+}
+
+@media  only screen and (min-width: 768px) {
+  .navigation-banner {
+    display: block;
+  }
+  .info-card {
+    padding: 10px 10px 10px;
+    width: 100%;
+    float: left;
+  }
+
+  .chart-body {
+    display: block
+  }
+  
+}
+
+@media  only screen and (min-width: 1000px) {
+  .navigation-banner {
+    display: block;
+  }
+  .info-card {
+    padding: 20px 20px 20px;
+    width: 30em;
+    float: left;
+  }
+}
