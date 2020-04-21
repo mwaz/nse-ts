@@ -1,0 +1,42 @@
+swagger: "2.0"
+info:
+  title: NSE stocks Exchange API
+  description: The data is stripped from NSE stocks site using puppeteer 
+  version: 1.0.0
+host: localhost:3005/api
+basePath: /v1
+schemes:
+  - http
+paths:
+  /stocks:
+    get:
+      summary: Returns all the Stocks
+      description: Stocks Currently trading at the NSE
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        400:
+          description: Could not complete request
+        404:
+          description: Stocks Could not be found
+
+  /stocks/{stock}:
+    get:
+      summary: Returns a single stock
+      description: The returned stock is defined by its trading name as defined by the Nairobi Stocks Exchange
+      parameters:
+            - in: path
+              name: stock
+              description: name of the stock to be fetched
+              required: true
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        400:
+          description: Could not complete request
+        404:
+          description: Stocks Could not be found
