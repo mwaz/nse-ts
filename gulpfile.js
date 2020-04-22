@@ -19,11 +19,7 @@ async function assets() {
     assetFiles.forEach(async asset => {
         return await gulp.src(asset)
         .pipe(gulp.dest('dist'));
-        
     });
-    // return gulp.src(YAML_FILES )
-    //     // gulp.src(JSON_FILES)
-    //     .pipe(gulp.dest('dist'));
 }
 const build = gulp.series(scripts, assets);
 
