@@ -40,3 +40,16 @@ paths:
           description: Could not complete request
         404:
           description: Stocks Could not be found
+
+  /stocks/data-refresh:
+    get:
+      summary: Returns stocks in realtime and updates the stocks database
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        400:
+          description: Could not complete request
+        404:
+          description: Stocks Could not be found

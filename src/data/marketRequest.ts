@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as puppeteer from 'puppeteer';
 import Stocks from './models/stocks';
+import * as path from 'path';
 
 let browser;
 let page;
@@ -20,7 +21,7 @@ export default class StockMarket {
 
     async writeData(path, data) {
         await fs.writeFile(path, data, err => {
-            err ? console.log('Error writing file', err) : console.log('Successfully wrote file')
+            err ? console.log('Error writing file', err) : console.log(`Successfully wrote file  in ${path}`)
         });
     }
 
@@ -37,7 +38,7 @@ export default class StockMarket {
         let stocksObject: any = {};
         let stockName, stockTradingName, stockDemandQuantity, stockDemandValue, stockSupplyValue, stockSupplyQuantity, highestValueSold, lowestValueSold;
 
-        for (let i = 1; i < 60; i++) {
+        for (let i = 1; i < 62; i++) {
             stockName = await frame.$$eval(`#symbol_${i}`, (options: any) => options.map(option => option.title));
             stockTradingName = await frame.$$eval(`#symbol_${i}`, (options: any) => options.map(option => option.textContent));
             stockDemandQuantity = await frame.$$eval(`#bidqty_${i}`, (options: any) => options.map(option => option.textContent));
@@ -62,7 +63,19 @@ export default class StockMarket {
 
             }
         }
-        return resultsObject;
+        
+        return resultsObject
+    }
+
+    async filterData (data) {
+
+        let filtered = data.filter(function (el) {
+            for (var key in el) {
+               return key !== undefined || el !==null
+            }
+
+          });
+        return filtered;
     }
 
     async saveData(results) {
@@ -74,6 +87,7 @@ export default class StockMarket {
                     stockName: result, stockTradingName: results[i].stockTradingName, stockDemandQuantity: results[i].stockDemandQuantity, stockDemandValue: results[i].stockDemandValue, stockSupplyValue: results[i].stockSupplyValue, stockSupplyQuantity: results[i].stockSupplyQuantity, highestValueSold: results[i].highestValueSold, lowestValueSold: results[i].lowestValueSold,
                 });
 
+
                 return ({ stocks: newStockObject });
             }
             catch (e) {
@@ -83,19 +97,23 @@ export default class StockMarket {
     }
 }
 
-const fetchData = (async () => {
+const fetchData =  async () => {
+    console.info('######### NOW FETCHING DATA #########');
     let stocks = new StockMarket
-    const dataDirectory = `${__dirname}/../data-dump/nse.json`
+    // const dataDirectory = `${__dirname}/../data-dump/nse.json`
     await stocks.appLogin();
     const resultsObject = await stocks.getIframeData(page);
+    const filteredData = await stocks.filterData(resultsObject);
     const timeStamp = new Date();
     // await stocks.checkExistentDirectory(dataDirectory);
-    await stocks.writeData(dataDirectory, JSON.stringify(resultsObject));
+    // await stocks.writeData(dataDirectory, JSON.stringify(resultsObject));
+    await stocks.writeData(path.join(__dirname + `/../../src/data-dump/nse.json`), JSON.stringify(filteredData));
     await stocks.writeData(__dirname + `/../data-backup/${timeStamp}_nse.json`, JSON.stringify(resultsObject));
-    await stocks.saveData(resultsObject);
+    // await stocks.saveData(resultsObject);
     await page.screenshot({ path: 'screenshot.png' });
     await browser.close();
-})();
+    console.info('######### FINISHED FETCHING DATA #########');
+};
 
 const fetchSingleStock = async (stock) => {
     let stockData;
@@ -124,7 +142,6 @@ const fetchSingleStock = async (stock) => {
 
      return stockData
 }
-
 
 export {
     fetchData,

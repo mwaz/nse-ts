@@ -1,10 +1,10 @@
 import { Router, Request, Response, NextFunction} from 'express';
 const  marketsData  = require('../data-dump/nse.json');
 
-
 import { 
-  // fetchData, 
+  fetchData, 
   fetchSingleStock } from '../data/marketRequest';
+
 
 export class MarketsRouter {
   router: Router
@@ -20,10 +20,26 @@ export class MarketsRouter {
   /**
    * GET all Markets.
    */
-  public getAll = async(req, res) => {
-    return res.send(marketsData);
-    // await fetchData;
 
+  public getAll = async(req, res) => {
+    await res.send(marketsData);
+    // await fetchData();
+  }
+
+
+  public getCurrrentData = async(req, res) => {
+    // await res.send(marketsData);
+    let result;
+    try{
+      result = await fetchData()
+    }
+    catch (e){ 
+      console.log(e, 'data could not be refreshed')
+    }
+    finally{
+      return result ? res.send(marketsData) : res.send({"message": "Data could not be refreshed"});
+    }
+    // await res.send(marketsData);
   }
 
   /**
@@ -35,8 +51,18 @@ export class MarketsRouter {
     const singleStock = await fetchSingleStock(req);
     await res.send(singleStock);
     // await fetchData;
-
   }
+
+  public getTopGainers = async(req, res) => {
+  
+  }
+
+  public getTopLosers = async(req, res) => {
+    
+  }
+
+ 
+  // RATE LIMIT REQUESTS
 
   /**
    * Take each handler, and attach to one of the Express.Router's
@@ -44,6 +70,7 @@ export class MarketsRouter {
    */
   init() {
     this.router.get('/', this.getAll);
+    this.router.get('/data-refresh', this.getCurrrentData);
     this.router.get('/:stock', this.getStock);
   }
 
