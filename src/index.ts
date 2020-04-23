@@ -11,19 +11,27 @@ import App from './App';
 
 debug('ts-express:server');
 
-// mongoose
-//   .connect(
-//     'mongodb://mongo:27017/dev_nse_data',
-//     { useNewUrlParser: true, useUnifiedTopology: false }
-//   )
-//   .then(() => {
-//     console.log('successfully connected to the database');
-//   })
-//   .catch((e) => {
-//     console.log('unable to connect to the database  Exiting now..');
-//     process.exit();
-//   });
-//   mongoose.set('useCreateIndex', true);
+mongoose
+  .connect(
+    'mongodb://127.0.0.1:27017/dev_nse_data',
+    
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
+
+//   mongoose.connection.on('connected', function(){
+//     console.log("successfully connected to the database");
+// });
+//   mongoose.connection.on('error', function(err){
+//     console.log("unable to connect to the database"+err+" error");
+// });
+  .then(() => {
+    console.log('successfully connected to the database');
+  })
+  .catch((e) => {
+    console.log(`unable to connect to the database  Exiting now.. ${e} error`);
+    process.exit();
+  });
+  mongoose.set('useCreateIndex', true);
 
   const fetchDataCronJob = cron.schedule('15 8,17 * * 1-5', function() {
     console.log("Running Cron Job For fetching nse data");

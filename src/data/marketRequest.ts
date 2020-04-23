@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as puppeteer from 'puppeteer';
 import Stocks from './models/stocks';
 import * as path from 'path';
+import StocksController from './controllers/stocks';
 
 let browser;
 let page;
@@ -62,6 +63,9 @@ export default class StockMarket {
                 }
 
             }
+            await Stocks.create({
+                stockName, stockTradingName, stockDemandQuantity, stockDemandValue, stockSupplyValue, stockSupplyQuantity, highestValueSold, lowestValueSold,
+            });
         }
         
         return resultsObject
@@ -77,39 +81,22 @@ export default class StockMarket {
           });
         return filtered;
     }
-
-    async saveData(results) {
-        for (let i = 0; i < results.length; i++) {
-            try {
-                let result = results[i].stockName
-                result ? console.log(result, 'stockName') : console.log('stockName undefined')
-                const newStockObject = await Stocks.create({
-                    stockName: result, stockTradingName: results[i].stockTradingName, stockDemandQuantity: results[i].stockDemandQuantity, stockDemandValue: results[i].stockDemandValue, stockSupplyValue: results[i].stockSupplyValue, stockSupplyQuantity: results[i].stockSupplyQuantity, highestValueSold: results[i].highestValueSold, lowestValueSold: results[i].lowestValueSold,
-                });
-
-
-                return ({ stocks: newStockObject });
-            }
-            catch (e) {
-                console.error(e.name + ': ' + e.message)
-            }
-        }
-    }
 }
 
 const fetchData =  async () => {
     console.info('######### NOW FETCHING DATA #########');
-    let stocks = new StockMarket
+    let stocks = new StockMarket;
+    let stockdb = new StocksController;
     // const dataDirectory = `${__dirname}/../data-dump/nse.json`
     await stocks.appLogin();
     const resultsObject = await stocks.getIframeData(page);
     const filteredData = await stocks.filterData(resultsObject);
     const timeStamp = new Date();
     // await stocks.checkExistentDirectory(dataDirectory);
-    // await stocks.writeData(dataDirectory, JSON.stringify(resultsObject));
     await stocks.writeData(path.join(__dirname + `/../../src/data-dump/nse.json`), JSON.stringify(filteredData));
-    await stocks.writeData(__dirname + `/../data-backup/${timeStamp}_nse.json`, JSON.stringify(resultsObject));
-    // await stocks.saveData(resultsObject);
+    await stocks.writeData(path.join(__dirname + `/../data-backup/${timeStamp}_nse.json`), JSON.stringify(filteredData));
+    // await stocks.saveData(filteredData);
+    // await stockdb.saveStocks(filteredData);
     await page.screenshot({ path: 'screenshot.png' });
     await browser.close();
     console.info('######### FINISHED FETCHING DATA #########');
